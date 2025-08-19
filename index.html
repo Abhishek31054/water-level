@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Water Level Monitor</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js"></script>
+</head>
+<body>
+  <h2>💧 Water Level Monitoring</h2>
+  <p>Water Level: <span id="level">--</span>%</p>
+  <p>Motor: <span id="motor">--</span></p>
+  <p>Dry Run: <span id="dryrun">--</span></p>
+
+  <button onclick="setMotor(1)">Motor ON</button>
+  <button onclick="setMotor(0)">Motor OFF</button>
+
+  <script>
+    // Firebase config (from Firebase Console → Project Settings → SDK setup and config)
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1ARR3AbTpPXZ5YD4yY9RvgDAFtux5OzY",
+  authDomain: "water-level-3c52a.firebaseapp.com",
+  databaseURL: "https://water-level-3c52a-default-rtdb.firebaseio.com",
+  projectId: "water-level-3c52a",
+  storageBucket: "water-level-3c52a.firebasestorage.app",
+  messagingSenderId: "975946187055",
+  appId: "1:975946187055:web:e3914a13661bfc08cc21da",
+  measurementId: "G-PXKHH32NY0"
+    };
+
+    // Init Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // Realtime updates
+    db.ref("/water/percent").on("value", snap => {
+      document.getElementById("level").innerText = snap.val();
+    });
+
+    db.ref("/motor/state").on("value", snap => {
+      document.getElementById("motor").innerText = snap.val() ? "ON" : "OFF";
+    });
+
+    db.ref("/dryRun").on("value", snap => {
+      document.getElementById("dryrun").innerText = snap.val();
+    });
+
+    function setMotor(state) {
+      db.ref("/control/manual").set(true);
+      db.ref("/control/motor_set").set(state);
+    }
+  </script>
+</body>
+</html>
